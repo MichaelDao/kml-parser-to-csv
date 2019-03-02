@@ -34,7 +34,25 @@ class KmlParser(object):
             for message in soup.findAll('placemark'):
                 locationdata = {}
 
-                # Find the <coordinates> tag
+                """
+                    parse_altitude
+                """
+                kmlaltitude = message.find('altitude')
+                altitude = str(kmlaltitude)
+
+                # remove prefix 
+                if altitude.startswith('<altitude>'):
+                    altitude = altitude[10:]
+
+                # remove suffix
+                if altitude.endswith('</altitude>'):
+                    altitude = altitude[:-11]
+
+                locationdata['altitude'] = altitude
+
+                """
+                    parse_coordinates
+                """
                 kmlcoordinates = message.find('coordinates')
                 coordinates = str(kmlcoordinates)
 
@@ -46,14 +64,12 @@ class KmlParser(object):
                 if coordinates.endswith('</coordinates>'):
                     coordinates = coordinates[:-14]
 
+                # seperate longitude and latitude
                 splitString = coordinates.split()
-
                 locationdata['latitude'] = splitString[0]
                 locationdata['longitude'] = splitString[1]
 
-                # print locationdata
-
-                # append the coordinates to array
+                # append data to array
                 self.outputdata.append(locationdata)
 
         # File reading error detected
